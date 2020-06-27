@@ -21,7 +21,7 @@ class UserModelSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("请输入密码和确认密码")
 
-        instance = super().createe(validated_data=validated_data)
+        instance = super().create(validated_data=validated_data)
 
         # 设置密码
         instance.set_password(password.strip())
@@ -43,3 +43,56 @@ class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=40, required=True)
     password = serializers.CharField(max_length=40, required=True)
 
+
+class UserAllListSerializer(serializers.ModelSerializer):
+    """
+    列出所有用户的Model Serializer
+    """
+
+    class Meta:
+        model = User
+        fields = (
+            "id", "username", "nick_name", "mobile", "email",
+            "qq", "wechart", "dingding",
+            "can_view", "date_joined", "is_superuser", "is_active", "last_login", "is_deleted"
+        )
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    """
+    用户详情/编辑 Model Serializer
+    """
+
+    class Meta:
+        model = User
+
+        fields = (
+            "id", "username", "nick_name", "mobile", "email",
+            "qq", "wechart", "dingding",
+            "can_view", "date_joined", "is_superuser", "is_active", "last_login", "is_deleted"
+        )
+        read_only_fields = ("id", "username", "last_loogin")
+
+
+class UserSelfDetailSerializer(serializers.ModelSerializer):
+    """
+    用户自己详情/编辑 Model Serializer
+    """
+
+    class Meta:
+        model = User
+
+        fields = (
+            "id", "username", "nick_name", "mobile", "email",
+            "qq", "wechart", "dingding",
+            "can_view", "date_joined", "is_superuser", "is_active", "last_login", "is_deleted"
+        )
+        read_only_fields = ("id", "can_view", "is_active", "is_deleted", "is_superuser", "username", "last_loogin")
+
+
+class UserChangePasswordSerializer(serializers.Serializer):
+    """用户修改密码 Serializer"""
+    username = serializers.CharField(max_length=40, required=True)
+    old_password = serializers.CharField(max_length=40, required=True)
+    password = serializers.CharField(max_length=40, required=True)
+    re_password = serializers.CharField(max_length=40, required=True)

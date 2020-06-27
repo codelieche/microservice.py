@@ -41,6 +41,10 @@ class UserProfile(AbstractUser):
         verbose_name = "用户信息"
         verbose_name_plural = verbose_name
 
+        permissions = (
+            ("reset_password", "重置密码"),
+        )
+
 
 # 注意：get_user_model()方法可以获取到本系统使用的是哪个用户Model
 # 默认的用户Model是：django.contrib.auth.models.User

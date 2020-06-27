@@ -33,7 +33,7 @@ class CustomBackend(ModelBackend):
             if user and user.check_password(password):
                 return user
             else:
-                return user
+                return None
 
         except Exception as e:
             return None

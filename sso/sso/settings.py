@@ -63,6 +63,7 @@ MIDDLEWARE = [
 
     # 自定义中间件
     # 如果是api访问用户的，就不对csrf校验
+    'utils.middlewares.csrf.ApiDisableCsrfMiddleware',
 
 ]
 
