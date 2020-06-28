@@ -33,7 +33,7 @@ class UserModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "nick_name", "mobile", "email", "qq", "wechart", "dingding")
+        fields = ("id", "username", "nick_name", "mobile", "email", "avater", "qq", "wechart", "dingding")
 
 
 class UserLoginSerializer(serializers.Serializer):
@@ -52,7 +52,7 @@ class UserAllListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            "id", "username", "nick_name", "mobile", "email",
+            "id", "username", "nick_name", "mobile", "email", "avater",
             "qq", "wechart", "dingding",
             "can_view", "date_joined", "is_superuser", "is_active", "last_login", "is_deleted"
         )
@@ -67,7 +67,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
         model = User
 
         fields = (
-            "id", "username", "nick_name", "mobile", "email",
+            "id", "username", "nick_name", "mobile", "email", "avater",
             "qq", "wechart", "dingding",
             "can_view", "date_joined", "is_superuser", "is_active", "last_login", "is_deleted"
         )
@@ -83,7 +83,7 @@ class UserSelfDetailSerializer(serializers.ModelSerializer):
         model = User
 
         fields = (
-            "id", "username", "nick_name", "mobile", "email",
+            "id", "username", "nick_name", "mobile", "email", "avater",
             "qq", "wechart", "dingding",
             "can_view", "date_joined", "is_superuser", "is_active", "last_login", "is_deleted"
         )

@@ -18,4 +18,6 @@ urlpatterns = [
     path('info', UserSelfInfoApiView.as_view(), name="info"),
     # 权限
     path('permission/', include(arg=('account.urls.permission', 'account'), namespace="permission")),
+    # 登录券
+    path("ticket/", include(arg=("account.urls.ticket", "account"), namespace="ticket")),
 ]

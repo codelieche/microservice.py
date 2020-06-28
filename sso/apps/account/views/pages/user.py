@@ -2,11 +2,12 @@
 网站首页
 """
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic import View
 
 from account.forms.user import UserLoginForm
+from account.tasks.ticket import generate_ticket
 
 
 class UserLoginPageView(View):
@@ -15,9 +16,20 @@ class UserLoginPageView(View):
     """
     def get(self, request):
         url = request.get_full_path()
-        next_url = request.GET.get("next")
-        if next_url:
-            return HttpResponseRedirect(redirect_to=next_url)
+        return_url = request.GET.get("returnUrl")
+        user = request.user
+        if user.is_authenticated and return_url:
+            try:
+                ticket = generate_ticket(request=request)
+                if return_url.find("?") > 0:
+                    return_url = "{}&ticket={}".format(return_url, ticket.name)
+                else:
+                    return_url = "{}?ticket={}".format(return_url, ticket.name)
+
+            except Exception as e:
+                print(str(e))
+
+            return HttpResponseRedirect(redirect_to=return_url)
 
         form = UserLoginForm()
         return render(request, "user/login.html", {"form": form, 'url': url, 'user': request.user})
@@ -34,8 +46,19 @@ class UserLoginPageView(View):
                 if user.is_active:
                     if user.can_view:
                         login(request, user)
-                        next_url = request.GET.get('next', '/user/login')
-                        return HttpResponseRedirect(redirect_to=next_url)
+                        return_url = request.GET.get('returnUrl', '/user/login')
+
+                        if return_url != "/user/login":
+                            try:
+                                ticket = generate_ticket(request=request)
+                                if return_url.find("?") > 0:
+                                    return_url = "{}&ticket={}".format(return_url, ticket.name)
+                                else:
+                                    return_url = "{}?ticket={}".format(return_url, ticket.name)
+                            except Exception as e:
+                                print(str(e))
+
+                        return HttpResponseRedirect(redirect_to=return_url)
                     else:
                         message = "用户({})，不可访问本系统，请联系管理员开通".format(user.username)
                 else:
