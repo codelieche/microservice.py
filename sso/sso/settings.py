@@ -184,6 +184,8 @@ AUTHENTICATION_BACKENDS = (
 SESION_SAVE_EVERY_REQUEST = True
 # 设置SESSION COOKIE过期时间 1h
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 60
+# sessionid的cookie名字
+SESSION_COOKIE_NAME = "ssosessionid"
 
 # Django Rest Framework的配置
 REST_FRAMEWORK = {
