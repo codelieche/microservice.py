@@ -5,6 +5,7 @@ from account.models.user import User
 from account.models.ticket import Ticket
 from account.serializers.user import UserDetailSerializer
 
+
 class TicketModelSerializer(serializers.ModelSerializer):
     """
     Ticket Model Serializer

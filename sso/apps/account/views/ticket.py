@@ -89,14 +89,14 @@ class TicketCheckApiView(APIView):
             }
             return JsonResponse(data=content, status=400)
 
-        # 第2步：校验return_url:(考虑是否后续不校验returnUrl)
-        return_url = request.GET.get("returnUrl")
-        if return_url != ticket.return_url:
-            content = {
-                "status": False,
-                "message": "传入的ticket不可用于跳转这个地址({})".format(return_url)
-            }
-            return JsonResponse(data=content, status=400)
+        # 第2步：校验return_url:(暂时不校验returnUrl，让其它系统中间件自行判断)
+        # return_url = request.GET.get("returnUrl")
+        # if return_url != ticket.return_url:
+        #     content = {
+        #         "status": False,
+        #         "message": "传入的ticket不可用于跳转这个地址({})".format(return_url)
+        #     }
+        #     return JsonResponse(data=content, status=400)
 
         # 第3步：修改ticket的信息
         ticket.is_active = False
