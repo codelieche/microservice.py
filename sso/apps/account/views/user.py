@@ -16,6 +16,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse, HttpResponseForbidden
 
 from account.models import User
+from account.models.safelog import SafeLog
 from account.serializers.user import (
     UserModelSerializer,
     UserLoginSerializer,
@@ -58,6 +59,18 @@ class LoginView(APIView):
             # 调用authenticate方法：注意settings.py中的AUTHICATIOON_BACKENDS
             user = authenticate(username=username, password=password)
 
+            # 安全日志：需要用到ip和设备名称
+            ip = "---"
+            agent = "---"
+            for k in ["HTTP_X_REAL_IP", "REMOTE_ADDR"]:
+                if k in request.META:
+                    # meta = request.META
+                    # print(meta)
+                    ip = request.META[k]
+                    break
+            if "HTTP_USER_AGENT" in request.META:
+                agent = request.META["HTTP_USER_AGENT"]
+
             if user is not None:
                 # 判断用户是否可以访问本系统
                 if not user.can_view:
@@ -65,6 +78,11 @@ class LoginView(APIView):
                         "status": False,
                         "message": "用户({})不能访问本系统，请找管理员开通访问权限".format(user.username)
                     }
+                    # 记录安全日志：login
+                    safelog_content = "登录系统失败: 不能访问本系统"
+                    SafeLog.objects.create(user=user, content=safelog_content, category="login", ip=ip, devices=agent,
+                                           success=False)
+
                     return JsonResponse(data=content, status=status.HTTP_403_FORBIDDEN)
 
                 # 登录
@@ -75,11 +93,19 @@ class LoginView(APIView):
                         "username": user.username,
                         "message": "登录成功"
                     }
+                    # 记录安全日志：login
+                    safelog_content = "登录系统成功"
+                    SafeLog.objects.create(user=user, content=safelog_content, category="login", ip=ip, devices=agent,
+                                           success=True)
                 else:
                     content = {
                         "status": False,
                         "message": "用户({})已被禁用".format(user.username)
                     }
+                    # 记录安全日志：login
+                    safelog_content = "登录系统失败: 账号被禁用"
+                    SafeLog.objects.create(user=user, content=safelog_content, category="login", ip=ip, devices=agent,
+                                           success=False)
 
                 return JsonResponse(data=content, status=status.HTTP_200_OK)
             else:
@@ -87,9 +113,15 @@ class LoginView(APIView):
                     "status": False,
                     "message": "账号或者密码不正确"
                 }
+                target_user = User.objects.filter(username=username).first()
+                if target_user:
+                    # 记录安全日志：login
+                    safelog_content = "登录系统失败"
+                    SafeLog.objects.create(user_id=target_user.id, content=safelog_content, category="login",
+                                           ip=ip, devices=agent, success=False)
                 return JsonResponse(data=content, status=status.HTTP_200_OK)
         else:
-            # 用户不存在
+            # 用户不存在: 按道理也应该记录一下
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -207,6 +239,18 @@ class UserChangePasswordApiView(APIView):
         user = request.user
         serializer = UserChangePasswordSerializer(data=request.data)
 
+        # 安全日志：需要用到ip和设备名称
+        ip = "---"
+        agent = "---"
+        for k in ["HTTP_X_REAL_IP", "REMOTE_ADDR"]:
+            if k in request.META:
+                # meta = request.META
+                # print(meta)
+                ip = request.META[k]
+                break
+        if "HTTP_USER_AGENT" in request.META:
+            agent = request.META["HTTP_USER_AGENT"]
+
         if serializer.is_valid():
             username = serializer.validated_data.get("username", "").strip()
             old_password = serializer.validated_data.get("old_password", "").strip()
@@ -222,6 +266,10 @@ class UserChangePasswordApiView(APIView):
                     "status": False,
                     "message": "传入的username与当前登录的用户不匹配"
                 }
+                # 记录安全日志：safe
+                safelog_content = "修改密码失败:username不匹配"
+                SafeLog.objects.create(user=user, content=safelog_content, category="safe",
+                                       ip=ip, devices=agent, success=False)
                 return JsonResponse(data=content, status=status.HTTP_400_BAD_REQUEST)
 
             # 2-1-2：检查传入的旧密码
@@ -231,6 +279,10 @@ class UserChangePasswordApiView(APIView):
                     "status": False,
                     "message": "输入的旧密码不正确",
                 }
+                # 记录安全日志：safe
+                safelog_content = "修改密码失败:旧密码不匹配"
+                SafeLog.objects.create(user=user, content=safelog_content, category="safe",
+                                       ip=ip, devices=agent, success=False)
                 return JsonResponse(data=content, status=status.HTTP_400_BAD_REQUEST)
 
             # 2-2: 检查新的密码
@@ -239,6 +291,10 @@ class UserChangePasswordApiView(APIView):
                     "status": False,
                     "content": "输入的密码和确认密码不相同"
                 }
+                # 记录安全日志：safe
+                safelog_content = "修改密码失败:密码和确认密码不相同"
+                SafeLog.objects.create(user=user, content=safelog_content, category="safe",
+                                       ip=ip, devices=agent, success=False)
                 return JsonResponse(data=content, status=status.HTTP_400_BAD_REQUEST)
 
             # 2-3: 校验密码长度是否符合规则：数字+字符/特殊字符(6-16)位
@@ -247,6 +303,10 @@ class UserChangePasswordApiView(APIView):
                     "status": False,
                     "message": "密码不符合要求:(由数字+字符/特殊字符组成，长度6-16位)"
                 }
+                # 记录安全日志：safe
+                safelog_content = "修改密码失败:密码不符合要求"
+                SafeLog.objects.create(user=user, content=safelog_content, category="safe",
+                                       ip=ip, devices=agent, success=False)
                 return JsonResponse(data=content, status=status.HTTP_400_BAD_REQUEST)
 
             # 第3步：修改密码
@@ -256,6 +316,10 @@ class UserChangePasswordApiView(APIView):
                 "status": True,
                 "message": "密码修改成功"
             }
+            # 记录安全日志：safe
+            safelog_content = "修改密码成功"
+            SafeLog.objects.create(user=user, content=safelog_content, category="safe",
+                                   ip=ip, devices=agent, success=True)
 
             # 第4步：退出登录
             logout(request)
@@ -273,6 +337,18 @@ class UserResetPasswordApiView(APIView):
     def put(self, request):
         # 1. 获取用户
         user = request.user
+
+        # 安全日志：需要用到ip和设备名称
+        ip = "---"
+        agent = "---"
+        for k in ["HTTP_X_REAL_IP", "REMOTE_ADDR"]:
+            if k in request.META:
+                # meta = request.META
+                # print(meta)
+                ip = request.META[k]
+                break
+        if "HTTP_USER_AGENT" in request.META:
+            agent = request.META["HTTP_USER_AGENT"]
 
         # 2. 权限判断，有相关权限的才可以重置密码
         # if not user.is_superuser:
@@ -294,7 +370,10 @@ class UserResetPasswordApiView(APIView):
                     "status": False,
                     "message": "用户{}不存在".format(username)
                 }
-
+                # 记录安全日志：safe
+                safelog_content = "重置({})密码失败:用户不存在".format(username)
+                SafeLog.objects.create(user=user, content=safelog_content, category="safe",
+                                       ip=ip, devices=agent, success=False)
                 return JsonResponse(data=content, status=status.HTTP_400_BAD_REQUEST)
             else:
                 # 校验密码
@@ -303,6 +382,10 @@ class UserResetPasswordApiView(APIView):
                         "status": False,
                         "message": "密码不符合要求:(由数字+字符/特殊字符组成，长度6-16位)"
                     }
+                    # 记录安全日志：safe
+                    safelog_content = "重置({})密码失败:密码不符合要求".format(target_user.username)
+                    SafeLog.objects.create(user=user, content=safelog_content, category="safe",
+                                           ip=ip, devices=agent, success=False)
                     return JsonResponse(data=content, status=status.HTTP_400_BAD_REQUEST)
 
                 # 重置密码
@@ -314,6 +397,16 @@ class UserResetPasswordApiView(APIView):
                     "status": True,
                     "message": "用户{}的密码重置为：{}".format(username, password)
                 }
+                # 记录安全日志：safe
+                # 这里记录两条：目标用户和操作用户
+                safelog_content = "重置密码成功:被管理员({})重置了密码".format(user.username)
+                SafeLog.objects.create(user=target_user, content=safelog_content, category="safe",
+                                       ip=ip, devices=agent, success=True)
+
+                safelog_content = "重置账号密码成功:{}".format(username)
+                SafeLog.objects.create(user=user, content=safelog_content, category="safe",
+                                       ip=ip, devices=agent, success=True)
+
                 return JsonResponse(data=content, status=status.HTTP_200_OK)
         else:
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)

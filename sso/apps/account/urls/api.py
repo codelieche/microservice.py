@@ -20,4 +20,6 @@ urlpatterns = [
     path('permission/', include(arg=('account.urls.permission', 'account'), namespace="permission")),
     # 登录券
     path("ticket/", include(arg=("account.urls.ticket", "account"), namespace="ticket")),
+    # 安全日志
+    path("safelog/", include(arg=("account.urls.safelog", "account"), namespace="safelog")),
 ]

@@ -187,6 +187,9 @@ SESSION_COOKIE_AGE = 60 * 60 * 24 * 60
 # sessionid的cookie名字
 SESSION_COOKIE_NAME = "ssosessionid"
 
+# 当前项目服务的Code：
+CURRENT_SERVICE_CODE = "sso"
+
 # Django Rest Framework的配置
 REST_FRAMEWORK = {
     # 设置分页
