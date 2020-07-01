@@ -28,7 +28,7 @@ SECRET_KEY = 'kykf0c+d!ar$v#^8(q^4k1$o%od1bwe1q^ajww@n##73%@r7x5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "*.codelieche.com", "localhost"]
+ALLOWED_HOSTS = ["127.0.0.1", "*.codelieche.com", "localhost", "*"]
 
 
 # Application definition
@@ -191,7 +191,7 @@ SESION_SAVE_EVERY_REQUEST = True
 # 设置SESSION COOKIE过期时间 1h
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 60
 # sessionid的cookie名字
-SESSION_COOKIE_NAME = "sessionid"
+SESSION_COOKIE_NAME = "msgsessionid"
 
 # Django Rest Framework的配置
 REST_FRAMEWORK = {

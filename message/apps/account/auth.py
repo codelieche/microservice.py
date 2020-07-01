@@ -14,14 +14,28 @@ class CustomBackend(ModelBackend):
     """
     自定义用户校验
     """
-    def login_sso_system(self, username=None, password=None):
-        sso_server = settings.SSO_SERVER_URL
-        sso_url_login = "{}/api/v1/account/login".format(sso_server)
+    def login_sso_system(self, request=None, username=None, password=None):
+        # 安全日志：需要用到ip和设备名称
+        ip = ""
+        agent = ""
+        for k in ["HTTP_X_REAL_IP", "REMOTE_ADDR"]:
+            if k in request.META:
+                ip = request.META[k]
+                break
+        if "HTTP_USER_AGENT" in request.META:
+            agent = request.META["HTTP_USER_AGENT"]
+
+        # 登录sso需要传递的参数
         data = {
             "username": username,
             "password": password
         }
 
+        # 通过GET参数传递ip和agent是有伪装风险的，后续可优化
+        sso_server = settings.SSO_SERVER_URL
+        sso_url_login = "{}/api/v1/account/login?ip={}&agent={}".format(sso_server, ip, agent)
+
+        # session是发起当前请求的会话
         session = requests.Session()
         count = 0
         while count < 5:
@@ -30,6 +44,12 @@ class CustomBackend(ModelBackend):
                 r = session.post(url=sso_url_login, data=data)
                 result = r.json()
                 if result["status"]:
+                    # 登录sso成功了：需要把ssosessionid设置到cookie中
+                    ssosessionid = session.cookies.get("ssosessionid")
+                    setattr(request, "need_set_ssosessionid", ssosessionid)
+                    # 添加了need_set_ssosessionid的属性之后
+                    # utils.middlewares.sso.CheckTicketMiddleware的处理process的时候就会设置cookie
+
                     # 登录成功: 获取用户信息
                     user = self.get_user_info(session=session)
                     return user
@@ -60,7 +80,7 @@ class CustomBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None, **kwargs):
         # 去sso中登录账号
-        user_info = self.login_sso_system(username=username, password=password)
+        user_info = self.login_sso_system(request=request, username=username, password=password)
 
         try:
             # 判断用户是否存在

@@ -57,19 +57,26 @@ class LoginView(APIView):
             password = serializer.validated_data.get("password", "")
 
             # 调用authenticate方法：注意settings.py中的AUTHICATIOON_BACKENDS
-            user = authenticate(username=username, password=password)
+            user = authenticate(request=request, username=username, password=password)
 
             # 安全日志：需要用到ip和设备名称
             ip = "---"
             agent = "---"
-            for k in ["HTTP_X_REAL_IP", "REMOTE_ADDR"]:
-                if k in request.META:
-                    # meta = request.META
-                    # print(meta)
-                    ip = request.META[k]
-                    break
-            if "HTTP_USER_AGENT" in request.META:
-                agent = request.META["HTTP_USER_AGENT"]
+            # 如果是子系统登录的，那么ip和agent就通过GET参数获取
+            # 通过GET参数传递是有伪装风险的，后续可优化
+            if request.GET.get("ip"):
+                ip = request.GET.get("ip")
+                agent = request.GET.get("agent", "---")
+            else:
+                # 用户直接通过account登录账号
+                for k in ["HTTP_X_REAL_IP", "REMOTE_ADDR"]:
+                    if k in request.META:
+                        # meta = request.META
+                        # print(meta)
+                        ip = request.META[k]
+                        break
+                if "HTTP_USER_AGENT" in request.META:
+                    agent = request.META["HTTP_USER_AGENT"]
 
             if user is not None:
                 # 判断用户是否可以访问本系统

@@ -34,7 +34,7 @@ class UserLoginPageView(View):
         form = UserLoginForm(request.POST)
         if form.is_valid():
             form_cleaned = form.cleaned_data
-            user = authenticate(username=form_cleaned['username'],
+            user = authenticate(request=request, username=form_cleaned['username'],
                                 password=form_cleaned['password'])
             if user is not None:
                 # 判断用户是否是激活的

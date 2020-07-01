@@ -56,7 +56,7 @@ class LoginView(APIView):
             password = serializer.validated_data.get("password", "")
 
             # 调用authenticate方法：注意settings.py中的AUTHICATIOON_BACKENDS
-            user = authenticate(username=username, password=password)
+            user = authenticate(request=request, username=username, password=password)
 
             if user is not None:
                 # 判断用户是否可以访问本系统
