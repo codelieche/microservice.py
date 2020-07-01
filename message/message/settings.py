@@ -168,7 +168,13 @@ STATICFILES_DIRS = (
 # 不需要加入中间的models
 AUTH_USER_MODEL = 'account.UserProfile'
 # 登陆地址: 当使用了login_required装饰器未传入login_url参数，默认会在settings中找LOGIN_URL
-# LOGIN_URL = "/user/login"
+LOGIN_URL = "/user/login"
+SSO_SERVER_URL = "http://127.0.0.1:8000"
+SSO_SERVER_LOGIN_URL = "{}/user/login".format(SSO_SERVER_URL)
+REDIRECT_FIELD_NAME = "returnUrl"
+
+# 当前系统服务相关的信息
+CURRENT_SERVICE_CODE = "message"
 
 # 使用自定义的后台auth认证方法
 AUTHENTICATION_BACKENDS = (

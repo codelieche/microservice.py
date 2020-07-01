@@ -18,6 +18,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("", include(arg=("message.urls.pages", "message"), namespace="pages")),
 
     # api v1 url
     path("api/v1/", include(arg=("message.urls.api_v1", "sso"), namespace="api")),

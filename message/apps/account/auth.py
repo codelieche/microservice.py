@@ -5,6 +5,7 @@
 import requests
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
+from django.conf import settings
 
 User = get_user_model()
 
@@ -14,7 +15,7 @@ class CustomBackend(ModelBackend):
     自定义用户校验
     """
     def login_sso_system(self, username=None, password=None):
-        sso_server = "http://127.0.0.1:8000"
+        sso_server = settings.SSO_SERVER_URL
         sso_url_login = "{}/api/v1/account/login".format(sso_server)
         data = {
             "username": username,
@@ -42,7 +43,7 @@ class CustomBackend(ModelBackend):
         :param session: 登录后的ssion
         :return: 用户信息字典类型
         """
-        sso_server = "http://127.0.0.1:8000"
+        sso_server = settings.SSO_SERVER_URL
         sso_url_info = "{}/api/v1/account/info".format(sso_server)
 
         count = 0

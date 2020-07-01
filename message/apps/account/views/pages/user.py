@@ -10,7 +10,6 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 from account.forms.user import UserLoginForm
-from account.tasks.ticket import generate_ticket
 
 
 class UserLoginPageView(View):
@@ -22,20 +21,13 @@ class UserLoginPageView(View):
         return_url = request.GET.get("returnUrl")
         user = request.user
         if user.is_authenticated and return_url:
-            try:
-                ticket = generate_ticket(request=request)
-                if return_url.find("?") > 0:
-                    return_url = "{}&ticket={}".format(return_url, ticket.name)
-                else:
-                    return_url = "{}?ticket={}".format(return_url, ticket.name)
-
-            except Exception as e:
-                print(str(e))
-
             return HttpResponseRedirect(redirect_to=return_url)
 
         form = UserLoginForm()
-        return render(request, "user/login.html", {"form": form, 'url': url, 'user': request.user})
+        return render(request, "user/login.html", {
+            "form": form, 'url': url, 'user': request.user,
+            "sso_server_url": settings.SSO_SERVER_URL
+        })
 
     def post(self, request):
         url = request.get_full_path()
@@ -51,16 +43,6 @@ class UserLoginPageView(View):
                         login(request, user)
                         return_url = request.GET.get('returnUrl', '/user/login')
 
-                        if return_url != "/user/login":
-                            try:
-                                ticket = generate_ticket(request=request)
-                                if return_url.find("?") > 0:
-                                    return_url = "{}&ticket={}".format(return_url, ticket.name)
-                                else:
-                                    return_url = "{}?ticket={}".format(return_url, ticket.name)
-                            except Exception as e:
-                                print(str(e))
-
                         return HttpResponseRedirect(redirect_to=return_url)
                     else:
                         message = "用户({})，不可访问本系统，请联系管理员开通".format(user.username)
@@ -74,11 +56,13 @@ class UserLoginPageView(View):
             message = "输入的内容不合法"
         return render(request, 'user/login.html', {'form': form,
                                                    'url': url,
-                                                   'msg': message})
+                                                   'msg': message,
+                                                   "sso_server_url": settings.SSO_SERVER_URL
+                                                   })
 
 
 @method_decorator(
-    login_required(redirect_field_name=settings.REDIRECT_FIELD_NAME),
+    login_required(login_url=settings.SSO_SERVER_LOGIN_URL, redirect_field_name=settings.REDIRECT_FIELD_NAME),
     name="dispatch"
 )
 class UserInfoPageView(View):
@@ -92,6 +76,7 @@ class UserInfoPageView(View):
         msg = "当前系统：{}".format(settings.CURRENT_SERVICE_CODE)
         return render(request, "user/info.html", {
             "user": user, "msg": msg,
+            "sso_server_url": settings.SSO_SERVER_URL
         })
 
 
@@ -101,5 +86,5 @@ class UserLogoutPageView(View):
     """
     def get(self, request):
         logout(request)
-        next_url = request.GET.get("next", "/user/login")
+        next_url = request.GET.get("next", settings.SSO_SERVER_LOGIN_URL)
         return HttpResponseRedirect(redirect_to=next_url)
