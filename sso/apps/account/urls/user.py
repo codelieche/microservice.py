@@ -10,6 +10,9 @@ from account.views.user import (
     UserChangePasswordApiView,
     UserResetPasswordApiView
 )
+from account.views.token import (
+    ObainRestFrameworkAuthTokenApiView
+)
 
 
 urlpatterns = [
@@ -17,6 +20,12 @@ urlpatterns = [
     # 登录、退出
     path("login", LoginView.as_view(), name="login"),
     path("logout", user_logout, name="logout"),
+
+    # token相关:
+    path('api-auth-token', ObainRestFrameworkAuthTokenApiView.as_view(), name="api-auth-token"),
+    path('drf-token', ObainRestFrameworkAuthTokenApiView.as_view(), name="drf-token"),
+    path('token', ObainRestFrameworkAuthTokenApiView.as_view(), name="token"),
+    # DRF Token使用示例： curl http://127.0.0.1:8000/api/v1/account/info --header 'Authorization:Token TOKEN_VALUE'
 
     # 用户相关api
     path("create", UserCreateApiView.as_view(), name="create"),
@@ -28,4 +37,5 @@ urlpatterns = [
     # 密码相关
     path('password/change', UserChangePasswordApiView.as_view(), name="password_change"),
     path('password/reset', UserResetPasswordApiView.as_view(), name="password_reset"),
+
 ]

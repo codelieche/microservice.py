@@ -7,6 +7,9 @@ from account.views.user import (
     UserAllListApiView,
     UserDetailApiView,
 )
+from account.views.token import (
+    ObainRestFrameworkAuthTokenApiView
+)
 
 
 urlpatterns = [
@@ -14,6 +17,12 @@ urlpatterns = [
     # 登录、退出
     path("login", LoginView.as_view(), name="login"),
     path("logout", user_logout, name="logout"),
+
+    # token相关:
+    path('api-auth-token', ObainRestFrameworkAuthTokenApiView.as_view(), name="api-auth-token"),
+    path('drf-token', ObainRestFrameworkAuthTokenApiView.as_view(), name="drf-token"),
+    path('token', ObainRestFrameworkAuthTokenApiView.as_view(), name="token"),
+    # DRF Token使用示例： curl http://127.0.0.1:8000/api/v1/account/info --header 'Authorization:Token TOKEN_VALUE'
 
     # 用户相关api
     path("list", UserListApiView.as_view(), name="list"),

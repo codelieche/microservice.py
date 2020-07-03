@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 第三方app
     "rest_framework",
+    'rest_framework.authtoken',  # drf token
     "corsheaders",  # 跨域访问
     "django_filters",
     # 自己写的app

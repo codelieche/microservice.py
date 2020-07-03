@@ -43,6 +43,7 @@ class UserProfile(AbstractUser):
 
         permissions = (
             ("reset_password", "重置密码"),
+            ('can_use_token', "能使用Token")
         )
 
 
