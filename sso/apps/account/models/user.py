@@ -29,6 +29,7 @@ class UserProfile(AbstractUser):
     # 能否访问本系统，默认是不可以访问本系统
     # 注意第一个管理员用户，可以去数据库调整can_view的值为1
     can_view = models.BooleanField(verbose_name="能访问", default=False, blank=True)
+    # 如果要禁用账号一定是要去设置is_active，can_view有些情况下不能限制住用户访问
     is_deleted = models.BooleanField(verbose_name="删除", default=False, blank=True)
 
     def __repr__(self):

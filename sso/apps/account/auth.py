@@ -31,6 +31,9 @@ class CustomBackend(ModelBackend):
 
             # 检查用户的密码
             if user and user.check_password(password):
+                # 能访问本系统的用户才返回user
+                # if not user.can_view: return None
+                # 如果注释了上面这一行，那么用TOKEN方式，依然可以登录本系统
                 return user
             else:
                 return None

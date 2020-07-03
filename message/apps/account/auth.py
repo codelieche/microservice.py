@@ -56,6 +56,7 @@ class CustomBackend(ModelBackend):
 
             except Exception as e:
                 print(e)
+                return None
 
     def get_user_info(self, session):
         """

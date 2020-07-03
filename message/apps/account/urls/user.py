@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from account.views.user import (
     LoginView, user_logout,
@@ -8,9 +9,9 @@ from account.views.user import (
     UserDetailApiView,
 )
 from account.views.token import (
-    ObainRestFrameworkAuthTokenApiView
+    ObainRestFrameworkAuthTokenApiView,
+    JwtTokenObtainPairView
 )
-
 
 urlpatterns = [
     # 前缀：/api/v1/account/user/
@@ -23,6 +24,8 @@ urlpatterns = [
     path('drf-token', ObainRestFrameworkAuthTokenApiView.as_view(), name="drf-token"),
     path('token', ObainRestFrameworkAuthTokenApiView.as_view(), name="token"),
     # DRF Token使用示例： curl http://127.0.0.1:8000/api/v1/account/info --header 'Authorization:Token TOKEN_VALUE'
+    path('jwt-token', JwtTokenObtainPairView.as_view(), name="jwt-token"),
+    path('jwt-token-refresh', TokenRefreshView.as_view(), name="jwt-token-refresh"),
 
     # 用户相关api
     path("list", UserListApiView.as_view(), name="list"),

@@ -7,8 +7,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenViewBase
 
 from account.models.safelog import SafeLog
+from account.serializers.token import ObtainJwtTokenSerializer
 
 
 class ObainRestFrameworkAuthTokenApiView(APIView):
@@ -59,3 +61,11 @@ class ObainRestFrameworkAuthTokenApiView(APIView):
                 SafeLog.objects.create(user_id=getattr(user, "id"), content=safelog_content, category="safe", ip=ip, devices=agent,
                                        success=False)
             return Response({"status": False, "message": "当前用户无权限使用Token"}, status=403)
+
+
+class JwtTokenObtainPairView(TokenViewBase):
+    """
+    JWT申请Token的api view
+    参考：rest_framework_simplejwt.views.TokenObtainPairView
+    """
+    serializer_class = ObtainJwtTokenSerializer

@@ -7,6 +7,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenViewBase
+
+from account.serializers.token import ObtainJwtTokenSerializer
 
 
 class ObainRestFrameworkAuthTokenApiView(APIView):
@@ -30,3 +33,11 @@ class ObainRestFrameworkAuthTokenApiView(APIView):
             return Response({'status': True, 'token': token.key})
         else:
             return Response({"status": False, "message": "当前用户无权限使用Token"}, status=403)
+
+
+class JwtTokenObtainPairView(TokenViewBase):
+    """
+    JWT申请Token的api view
+    参考：rest_framework_simplejwt.views.TokenObtainPairView
+    """
+    serializer_class = ObtainJwtTokenSerializer
