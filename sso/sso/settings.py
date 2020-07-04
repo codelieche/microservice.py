@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     "corsheaders",  # 跨域访问
     "django_filters",
     # 自己写的app
-    "account",
+    "account.apps.AccountConfig",
+    "config.apps.ConfigConfig"
 ]
 
 MIDDLEWARE = [

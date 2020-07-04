@@ -16,9 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from sso.views.setup import ProjectSetupView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include(arg=("sso.urls.pages", "sso"), namespace="pages")),
+    # 初始化
+    path('api/v1/setup', ProjectSetupView.as_view(), name="setup"),
     # api v1 url
     path("api/v1/", include(arg=("sso.urls.api_v1", "sso"), namespace="api")),
+
 ]

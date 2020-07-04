@@ -15,7 +15,7 @@ body {
   text-align: center;
   margin: 100px auto;
   padding: 0px;
-  width: 300px;
+  width: 330px;
   //height: 250px;
   background-color: #fff;
   color: #666;
@@ -43,15 +43,18 @@ body {
     label {
       display: inline-block;
       width: 60px;
+      height: 28px;
       text-align: left;
       margin-right: 10px;
       font-size: 16px;
     }
     input {
-      width: 160px;
-      padding: 3px 5px;
-      line-height: 20px;
+      width: 200px;
+      height: 28px;
+      padding: 3px 10px;
+      //line-height: 20px;
       font-size: 14px;
+      outline: none;
     }
     /* login错误info */
 
@@ -72,10 +75,11 @@ body {
     width: 100%;
     text-align: center;
     .btn {
-      width: 90%;
+      width: 95%;
       display: inline-block;
       font-size:16px;
-      line-height: 25px;
+      //line-height: 25px;
+      height: 32px;
       background-color: #fff;
       border:1px solid #dfdfdf;
       color: #555;
@@ -98,4 +102,12 @@ body {
       }
     }
   }
+}
+
+input {
+  border: 1px solid #ccc;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
 }
