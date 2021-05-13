@@ -1,0 +1,9 @@
+.idea/
+/tmp
+
+requirements.txt
+.python-version
+
+proto/pb/
+*.pb2.py
+*.pb_grpc.py
