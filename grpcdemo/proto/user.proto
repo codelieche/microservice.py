@@ -2,7 +2,7 @@ syntax = "proto3";
 import "google/protobuf/any.proto";
 
 package usercenter;
-option go_package="github.com/codelieche/microservice/usercenter/  proto/userpb;userpb";
+option go_package="github.com/codelieche/microservice/usercenter/proto/userpb;userpb";
 
 
 message User {

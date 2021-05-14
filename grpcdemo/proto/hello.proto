@@ -1,12 +1,15 @@
 syntax = "proto3";
 
+// 当是跨语言调用的时候，package注意配置正确
+package tutorial;
+
 message HelloMessage {
   string title = 1;
   string content = 2;
 }
 
 message HelloRequest {
-  string content = 1;
+  string message = 1;
 }
 
 message HelloResponse {

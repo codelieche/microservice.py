@@ -9,7 +9,8 @@ from proto.pb.hello_pb2 import HelloResponse
 
 class HelloGreeter(GreeterServicer):
     def SayHello(self, request, context):
-        msg = f"request: -->: {request.content}, response!"
+        print("收到请求：", request)
+        msg = f"request: -->: {request.message}, response!"
         response = HelloResponse(message=msg)
         return response
 

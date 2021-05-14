@@ -12,7 +12,7 @@ def test_hello_greeter_sayhello(n=10):
     with grpc.insecure_channel(address) as channel:
         stub = GreeterStub(channel=channel)
         for i in range(n):
-            request = HelloRequest(content=f"Hello Test: {i + 1}")
+            request = HelloRequest(message=f"Hello Test: {i + 1}")
 
             response = stub.SayHello(request)
             print(response.message)
