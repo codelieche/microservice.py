@@ -3,11 +3,18 @@ import grpc
 
 from concurrent import futures
 
+from proto.pb.base_pb2 import Pong
 from proto.pb.hello_pb2_grpc import GreeterServicer, add_GreeterServicer_to_server
 from proto.pb.hello_pb2 import HelloResponse
 
 
 class HelloGreeter(GreeterServicer):
+
+    def Ping(self, request, context):
+        print("收到ping请求")
+        pong = Pong(status=True, message="Pong")
+        return pong
+
     def SayHello(self, request, context):
         print("收到请求：", request)
         msg = f"request: -->: {request.message}, response!"
@@ -32,4 +39,5 @@ def run_greeter_server(address="0.0.0.0:9081"):
 
 if __name__ == "__main__":
     addr = "0.0.0.0:9081"
+    # start server
     run_greeter_server(address=addr)

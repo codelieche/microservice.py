@@ -29,5 +29,6 @@ function generate() {
     python -m grpc_tools.protoc --python_out=./pb --grpc_python_out=./pb -I=. ./${FILE}.proto
 }
 
+#generate base
 #generate hello
 generate stream

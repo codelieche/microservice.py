@@ -7,6 +7,7 @@ from concurrent import futures
 
 import grpc
 
+from proto.pb.base_pb2 import Pong
 from proto.pb.stream_pb2_grpc import NewsStoreServicer, add_NewsStoreServicer_to_server
 from proto.pb.stream_pb2 import NewsRequest, NewsResponse
 
@@ -16,6 +17,11 @@ class NewsStoreService(NewsStoreServicer):
     def __int__(self):
         print("初始化")
         super().__init__()
+
+    def Ping(self, request, context):
+        print("收到ping请求")
+        pong = Pong(status=True, message="Pong")
+        return pong
 
     def GetNewsStream(self, request, context):
         print("收到请求：", request.data, context)
@@ -78,4 +84,5 @@ def run_news_store_server(address="0.0.0.0:9081"):
 
 
 if __name__ == "__main__":
+    # start server
     run_news_store_server()

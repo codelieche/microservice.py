@@ -3,9 +3,22 @@ import time
 import threading
 
 import grpc
+from google.protobuf import empty_pb2
 
 from proto.pb.stream_pb2 import NewsRequest, NewsResponse
 from proto.pb.stream_pb2_grpc import NewsStoreStub
+
+
+def test_news_store_get_news_ping(n=10):
+    address = "0.0.0.0:9081"
+    with grpc.insecure_channel(address) as channel:
+        stub = NewsStoreStub(channel=channel)
+        for i in range(n):
+            r = empty_pb2.Empty()
+            response = stub.Ping(r)
+            print(i, "====>", response.message)
+            print(response)
+            time.sleep(i + 1 if i < 5 else 3)
 
 
 def test_news_store_get_news_stream(n=10):
@@ -87,7 +100,10 @@ def test_news_store_get_put_news_stream(n=10):
 
 
 if __name__ == "__main__":
+    test_news_store_get_news_ping()
+
     # test_news_store_get_news_stream()
-    test_news_store_put_news_stream()
+
+    # test_news_store_put_news_stream()
 
     # test_news_store_get_put_news_stream()
