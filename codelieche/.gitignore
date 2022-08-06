@@ -1,0 +1,5 @@
+/dist
+*.sqllite3
+*.egg-info
+/temp
+/build
