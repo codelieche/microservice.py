@@ -21,25 +21,40 @@ pip install codelieche-0.0.1.tar.gz
 
 
 ### 包的使用测试
-
-```bash
+- demo
+```iptyon
 In [1]: from codelieche.demo import demo
 
 In [2]: demo()
 Hello Demo
 
-In [3]: from codelieche.tools import random_password
+```
 
-In [4]: random_password()
-Out[4]: 'OolrauqAQC1WBSGb'
+- password
 
-In [5]: random_password()
-Out[5]: 'Vsmc6P4DuIe1nNqH'
+```ipython
+In [1]: from codelieche.tools import random_password
 
-In [6]: random_password(length=8)
-Out[6]: 'L3nZHg2l'
+In [2]: random_password()
+Out[2]: 'ksBrtbm9SFY1iNT4'
 
-In [7]: random_password(length=32)
-Out[7]: 'N3PVd91OASnIZBCpEzmwXh4WKsQigMH7'
+In [3]: from codelieche.tools import Cryptography
+
+In [4]: k = random_password(16)
+
+In [5]: k
+Out[5]: 'ytm2OazpvxgA3X0Z'
+
+In [6]: p = Cryptography(k)
+
+In [7]: en_p = p.encrypt('codelieche')
+
+In [8]: en_p
+Out[8]: '878d95bb5fd643a61dcf1e86fc1751c8'
+
+In [9]: de_p = p.decrypt(en_p)
+
+In [10]: de_p
+Out[10]: 'codelieche'
 ```
 
