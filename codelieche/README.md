@@ -33,28 +33,39 @@ Hello Demo
 - password
 
 ```ipython
-In [1]: from codelieche.tools import random_password
+In [1]: from codelieche.tools import random_password, Cryptography
 
-In [2]: random_password()
-Out[2]: 'ksBrtbm9SFY1iNT4'
+In [2]: k = random_password(16)
 
-In [3]: from codelieche.tools import Cryptography
+In [3]: k
+Out[3]: 'bj1HWJV4ACrkmQUl'
 
-In [4]: k = random_password(16)
+In [4]: p = Cryptography(k)
 
-In [5]: k
-Out[5]: 'ytm2OazpvxgA3X0Z'
+In [5]: en_p = p.encrypt('codelieche')
 
-In [6]: p = Cryptography(k)
+In [6]: en_p
+Out[6]: '3c6c2bd8c3bdb225086da69acfe93d74'
 
-In [7]: en_p = p.encrypt('codelieche')
+In [7]: de_p = p.decrypt(en_p)
 
-In [8]: en_p
-Out[8]: '878d95bb5fd643a61dcf1e86fc1751c8'
+In [8]: de_p
+Out[8]: 'codelieche'
 
-In [9]: de_p = p.decrypt(en_p)
+In [10]: from codelieche.django.password import random_password, Cryptography
 
-In [10]: de_p
-Out[10]: 'codelieche'
+In [11]: k = random_password(16)
+
+In [12]:  p = Cryptography(k)
+
+In [13]: en_p = p.encrypt('codelieche')
+
+In [14]: en_p
+Out[14]: 'caff8c0f7072cd2c68512addb1f11bd3'
+
+In [15]: de_p = p.decrypt(en_p)
+
+In [16]: de_p
+Out[16]: 'codelieche'
 ```
 

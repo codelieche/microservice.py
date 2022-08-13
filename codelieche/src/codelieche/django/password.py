@@ -8,6 +8,7 @@ import random
 import string
 from Crypto.Cipher import AES
 from binascii import b2a_hex, a2b_hex
+from django.conf import settings
 
 
 def random_password(length=16):
@@ -33,7 +34,12 @@ class Cryptography:
     Symetric Cryptography
     """
     # def __init__(self, key):
-    def __init__(self, key="1234567890123456"):
+    def __init__(self, key=None):
+        if not key and hasattr(settings, "PASSWORD_KEY"):
+            key = settings.PASSWORD_KEY
+        else:
+            key = "1234567890123456"
+
         # key必须是字符串格式的
         key = str(key)
         self.key = key.encode("utf8")
