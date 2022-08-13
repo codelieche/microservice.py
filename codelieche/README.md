@@ -52,7 +52,7 @@ In [7]: de_p = p.decrypt(en_p)
 In [8]: de_p
 Out[8]: 'codelieche'
 
-In [10]: from codelieche.django.password import random_password, Cryptography
+In [10]: from codelieche.django.utils import random_password, Cryptography
 
 In [11]: k = random_password(16)
 
