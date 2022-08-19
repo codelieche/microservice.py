@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 from django.db import models
 from django.utils import timezone
+from django.contrib.contenttypes.models import ContentType
+
 
 from codelieche.django.utils import Cryptography
 
@@ -62,6 +64,60 @@ class BaseModel(models.Model):
         # 调用父类的save方法
         return super().save(force_insert=force_insert, force_update=force_update, using=using,
                             update_fields=update_fields)
+
+    def get_relative_object_by_model(self, model, args=None, value=None, many=False, field="pk"):
+        """
+        通过model获取关系的对象
+        多值还是单值，自行判断
+        :param model: 类，必须是django的类
+        :param args: 过滤条件，必须是dict
+        :param value: 过滤检索的值，有可能是列表
+        :param many: 是否是多值
+        :param field: 过滤的字段，默认是pk
+        :return:
+        """
+        # 1. 构造检索的数据
+        # field自己处理，比如：id__in，等
+        if args and isinstance(args, dict):
+            data = args
+        elif value:
+            data = {field: value}
+        else:
+            raise ValueError("args或者value必须传递一个")
+
+        # 2. 判断model是否正确
+        if not issubclass(model, models.Model):
+            raise ValueError("传入的model必须是django.db.Modeel的子类")
+
+        # 3. 开始过滤数据
+        if many:
+            queryset = model.objects.filter(**data)
+            return queryset
+        else:
+            # 这个直接用get是有可能报错的（比如根据一条字段，得到了2条数据），这个传入端去处理
+            obj = model.objects.get(**data)
+            return obj
+
+    def get_relative_object_by_content_type(self, app_label, model, args=None, value=None, many=False, field="pk"):
+        """
+        根据content_type获取到对象
+        :param app_label: app的名字
+        :param model: 类，必须是django的类的名称
+        :param args: 过滤条件，必须是dict
+        :param value: 过滤检索的值，有可能是列表
+        :param many: 是否是多值
+        :param field: 过滤的字段，默认是pk
+        :return:
+        """
+        # 1. 根据app_label和model获取到Model
+        ct = ContentType.objects.filter(app_label=app_label, model=model).first()
+        if not ct:
+            return None
+        model_cls = ct.model_class()
+
+        # 2. 调用get_relative_object_by_model获取对象
+        return self.get_relative_object_by_model(model=model_cls, args=args, value=value, many=many, field=field)
+
 
     def do_delete_update_field(self):
         """
