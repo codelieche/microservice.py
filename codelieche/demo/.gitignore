@@ -1,0 +1,5 @@
+
+db.sqllite3
+
+/**/migrations/*.py
+!/**/migrations/__init__.py
