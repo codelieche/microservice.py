@@ -39,3 +39,27 @@ class BaseQuerysetFilterMixin:
             if params and isinstance(params, dict):
                 queryset = queryset.filter(**params)
         return queryset
+
+
+class QuerysetFilterByTeamID(BaseQuerysetFilterMixin):
+    """
+    根据teamid过滤queryset
+    """
+
+    # 每个需要根据team_id过滤的视图，请自行设置team_id_field
+    # team_id_field = None
+
+    def get_filter_field_value(self):
+        try:
+            return self.request.user.team_id
+        except Exception as e:
+            return None
+
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     if self.team_id_field and queryset:
+    #         params = {
+    #             self.team_id_field: self.get_team_id_value()
+    #         }
+    #         queryset = queryset.filter(**params)
+    #     return queryset

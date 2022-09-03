@@ -13,6 +13,8 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 
+from codelieche.django.modellog.mixins import LoggingViewSetMixin
+from codelieche.django.views.mixins.queryset import QuerysetFilterByTeamID
 from codelieche.django.pagination import SelfPagination
 
 
@@ -115,7 +117,9 @@ class SelfGenericViewSet(GenericViewSet):
             return self.serializer_class
 
 
-class ModelViewSet(CreateModelMixin,
+class ModelViewSet(LoggingViewSetMixin,
+                   QuerysetFilterByTeamID,
+                   CreateModelMixin,
                    RetrieveModelMixin,
                    UpdateModelMixin,
                    DestroyModelMixin,
@@ -134,7 +138,8 @@ class ModelViewSet(CreateModelMixin,
 
 
 # 只读的ViewSet，不添加、不修改、不删除
-class ReadOnlyViewSet(RetrieveModelMixin,
+class ReadOnlyViewSet(LoggingViewSetMixin,
+                      RetrieveModelMixin,
                       ListModelMixin,
                       GenericViewSet):
 
