@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body div.main {
+            padding: 10px 10px;
+            margin: 0 auto;
+            font-size: 14px;
+            color: #888;
+        }
+        .main .content {
+            padding: 10px 5px;
+        }
+        .main .info {
+            display: inline-block;
+            border-left: 3px solid orange;
+            margin-top: 5px;
+            border-top: 1px solid #e9e9ea;
+            border-bottom: 1px solid #e9e9ea;
+            padding: 5px 10px;
+            color: #888;
+            background: #e4e6e8;
+            font-size: 13px;
+            min-width: 360px;
+        }
+        .main .info strong {
+            color: #666;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <div class="content">
+            {{ content }}
+        </div>
+        <div>
+            <div class="info">
+            <strong>{{ system }}</strong>: 当前系统只提供后端api服务!
+        </div>
+        </div>
+    </div>
+</body>
+</html>

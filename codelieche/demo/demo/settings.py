@@ -10,11 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
+import sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+# 把apps添加到path路径中，app统一放apps中
+sys.path.append(os.path.join(BASE_DIR, "apps"))
+# codelieche的库放在上级目录中, 正式发布的时候需要安装codelieche这个库
+sys.path.append(os.path.join(BASE_DIR, "../src"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -37,7 +42,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'store.apps.StoreConfig'
+
+    # 第三方app
+    'rest_framework',
+    'corsheaders',
+    'django_filters',
+
+    # 自己写的app
+    'codelieche.django.modellog',
+    'store.apps.StoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -48,14 +61,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 第三方中间件：cors
+    'corsheaders.middleware.CorsMiddleware',
+    # 自定义中间件
+    'codelieche.django.middlewares.csrf.ApiDisableCsrfMiddleware',
+
 ]
 
-ROOT_URLCONF = 'demo.urls'
+ROOT_URLCONF = 'demo.urls.main'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -122,3 +140,52 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Django Rest Framework的配置
+REST_FRAMEWORK = {
+    # 设置分页
+    # 'DEFAULT_PAGINATION_CLASS': "rest_framework.pagination.LimitOffsetPagination",
+    # 'DEFAULT_PAGINATION_CLASS': "rest_framework.pagination.PageNumberPagination",
+    'DEFAULT_PAGINATION_CLASS': 'codelieche.django.pagination.SelfPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        # 为了调试，需要BrowsableAPIRenderer,生产环境需要注释下面这行
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+    # 设置DatetimeField字段的格式
+    'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
+}
+
+# from rest_framework import authentication
+
+# 跨域访问相关配置
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/api/.*$'
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = [
+    'OPTIONS',
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'access-control-allow-headers',
+    'x-team-id'
+]
+
+# 加密的密码
+PASSWORD_KEY = os.environ.get("PASSWORD_KEY", "0000000000000000")

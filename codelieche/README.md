@@ -6,6 +6,7 @@
 ### build
 
 ```bash
+rm -rf build dist src/codelieche.egg-info
 python setup.py sdist build
 ```
 打包后，在dist目录会看到codelieche-0.0.1.tar.gz
