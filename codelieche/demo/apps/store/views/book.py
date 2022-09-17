@@ -10,6 +10,7 @@ from store.serializers.book import BookModelSerializer
 
 class BookApiViewSet(ModelViewSet):
     queryset = Book.objects.filter(deleted=False)
+    # queryset = Book.objects.filter()
     serializer_class = BookModelSerializer
     serializer_class_set = (BookModelSerializer,)
     # 测试环境用
