@@ -2,7 +2,8 @@
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-# from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
+from account.signals.demo import demo_signal
 
 
 class TestView(APIView):
@@ -18,4 +19,5 @@ class TestView(APIView):
             "ip": meta["REMOTE_ADDR"],
             "agent": meta["HTTP_USER_AGENT"],
         }
+        demo_signal.send(sender=request)
         return Response(content)
