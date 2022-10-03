@@ -8,12 +8,12 @@ from account.views.user import (
     UserApiViewSet
 )
 from account.views.team import TeamApiViewSet
-
+from account.views.system import SystemApiViewSet
 
 router = DefaultRouter()
 router.register('user', UserApiViewSet)
 router.register('team', TeamApiViewSet)
-
+router.register('system', SystemApiViewSet)
 
 urlpatterns = [
     # 前缀：/api/v1/account
