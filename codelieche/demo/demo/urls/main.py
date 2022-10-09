@@ -17,7 +17,6 @@ from django.urls import path, include
 from demo.views.index import index_page
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
     path('', index_page),
     path('api/v1/', include(arg=('demo.urls.api_v1', 'demo'), namespace='demo')),
 ]
