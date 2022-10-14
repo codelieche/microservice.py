@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 
 from store.views.book import BookApiViewSet
 from store.views.email import EmailApiViewSet
+from store.views.todolist import TodoListApiViewSet
 
 
 router = DefaultRouter()
@@ -11,6 +12,7 @@ router = DefaultRouter()
 
 router.register("book", BookApiViewSet)
 router.register("email", EmailApiViewSet)
+router.register("todolist", TodoListApiViewSet)
 
 urlpatterns = [
     # 前缀：/api/v1/store
